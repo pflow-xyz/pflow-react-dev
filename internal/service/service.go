@@ -102,8 +102,6 @@ func (s *Server) ServeHTTP(box *rice.Box) {
 	s.WrapHandler("/src/", s.App.JsonHandler)
 	s.WrapHandler("/src/{pflowCid}.json", s.App.JsonHandler)
 	s.WrapHandler("/share/", s.App.ShareHandler)
-	s.WrapHandler("/share-solidity/", s.App.ShareSolidityHandler)
-	s.WrapHandler("/model/", s.App.ModelQueryHandler)
 
 	s.WrapHandler("/p/{pflowCid}/", func(vars map[string]string, w http.ResponseWriter, r *http.Request) {
 		if vars["pflowCid"] != "" {

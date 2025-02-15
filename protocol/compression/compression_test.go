@@ -23,7 +23,7 @@ func TestCompressBrotliEncodeAndDecode(t *testing.T) {
 func TestDecompressEncodedUrl(t *testing.T) {
 	rawData := "GxUBIBwHdqMPWUayBmvB036CyG2p/i4T/vkhUIqhOINzBItzjIAjQRT6UodFYb3lf/s+tUpixqYotpvtm6rosihFrSj0hinJ5yEzylwRkOHP3/C10Z+9DY4wrECyVuOuK6yIowpW+wANmGBbDfiT25M8ymZktaqaaJI4OGKn72O+5sEtRzooqYttsJIJXHe9+n0VHHo2"
 	urlString := "https://pflow-dev.github.io/pflow-js/p/?z=" + rawData
-	sourceJson, ok := DecompressEncodedUrl(urlString)
+	sourceJson, ok := JsonFromEncodedUrl(urlString)
 	if !ok {
 		t.Fatalf("failed to decompress")
 	}

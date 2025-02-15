@@ -578,7 +578,7 @@ func (m *Model) ZipUrl(path ...string) (urlString string, ok bool) {
 }
 
 func (m *Model) UnpackFromUrl(url string) (sourceJson string, ok bool) {
-	sourceJson, ok = compression.DecompressEncodedUrl(url)
+	sourceJson, ok = compression.JsonFromEncodedUrl(url)
 	if ok {
 		ok = m.loadJsonDefinition(sourceJson)
 	}
