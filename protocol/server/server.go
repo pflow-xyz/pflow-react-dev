@@ -6,7 +6,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/pflow-dev/pflow-xyz/protocol/compression"
 	"github.com/pflow-dev/pflow-xyz/protocol/image"
 	"github.com/pflow-dev/pflow-xyz/protocol/metamodel"
 	"github.com/pflow-dev/pflow-xyz/protocol/model"
@@ -42,7 +41,6 @@ type Service interface {
 	IndexPage() *template.Template
 	Event(eventType string, params map[string]interface{})
 	GetState(r *http.Request) (state metamodel.Vector, ok bool)
-	CheckForSnippet(hostname string, url string, referrer string) (string, bool)
 	CheckForModel(hostname string, url string, referrer string) (string, bool)
 }
 
@@ -214,24 +212,4 @@ func (app *App) WebHookHandler(vars map[string]string, w http.ResponseWriter, r 
 	_, _ = r.Body.Read(body)
 	fmt.Printf("body: %s\n", body)
 
-}
-
-func (app *App) SandboxHandler(vars map[string]string, w http.ResponseWriter, r *http.Request) {
-	// TODO: replace with solidity sandbox
-	cid, found := app.CheckForSnippet(r.Host, r.URL.String(), r.Header.Get("Referer"))
-	if found {
-		http.Redirect(w, r, "/sandbox/"+cid+"/", http.StatusFound)
-		return
-	}
-	templateData := struct {
-		IpfsCid    string
-		SourceCode string
-	}{
-		IpfsCid:    vars["pflowCid"],
-		SourceCode: "",
-	}
-	if vars["pflowCid"] != "" {
-		rec := app.Storage.Snippet.GetByCid(vars["pflowCid"])
-		templateData.SourceCode, _ = compression.DecompressEncodedUrl("?z=" + rec.Base64Zipped)
-	}
 }

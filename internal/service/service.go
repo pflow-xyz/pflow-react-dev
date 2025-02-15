@@ -7,7 +7,6 @@ import (
 	"github.com/newrelic/go-agent/v3/integrations/logcontext-v2/logWriter"
 	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/pflow-dev/pflow-xyz/config"
-	"github.com/pflow-dev/pflow-xyz/protocol/compression"
 	"github.com/pflow-dev/pflow-xyz/protocol/metamodel"
 	"github.com/pflow-dev/pflow-xyz/protocol/model"
 	"github.com/pflow-dev/pflow-xyz/protocol/oid"
@@ -81,6 +80,7 @@ func (s *Server) PrintLinks(m model.Model, url string) {
 var pageRoutes = []string{
 	"/",
 	"/app",
+	"/editor",
 	"/app-manual",
 	"/docs",
 	"/docs-petri-net-101",
@@ -97,13 +97,10 @@ func (s *Server) ServeHTTP(box *rice.Box) {
 	for _, route := range pageRoutes {
 		s.WrapHandler(route, s.App.AppPage)
 	}
-	// s.WrapHandler("/p/", s.App.AppPage)
-	// s.WrapHandler("/p/{pflowCid}/", s.App.AppPage)
 	s.WrapHandler("/img/", s.App.SvgHandler)
 	s.WrapHandler("/img/{pflowCid}.svg", s.App.SvgHandler)
 	s.WrapHandler("/src/", s.App.JsonHandler)
 	s.WrapHandler("/src/{pflowCid}.json", s.App.JsonHandler)
-	// s.WrapHandler("/_webhook/0x{contract}", s.App.WebHookHandler)
 	s.WrapHandler("/share/", s.App.ShareHandler)
 	s.WrapHandler("/share-solidity/", s.App.ShareSolidityHandler)
 	s.WrapHandler("/model/", s.App.ModelQueryHandler)
@@ -256,41 +253,6 @@ func (s *Server) CheckForModel(hostname string, url string, referrer string) (st
 		return cid, true
 	}
 	return "", false
-}
-
-// DEPRECATED - sandbox is no longer supported
-func (s *Server) CheckForSnippet(hostname string, url string, referrer string) (string, bool) {
-	defer func() {
-		if r := recover(); r != nil {
-			s.Logger.Printf("Recovered from panic in CheckForSnippet: %v", r)
-		}
-	}()
-	srcUrl := "https://" + hostname + url
-	sourceCode, foundInUrl := compression.DecompressEncodedUrl(srcUrl)
-	if !foundInUrl {
-		// try to convert a model to a snippet
-		// REVIEW: do we want to continue support for snippets
-	}
-	cid := oid.ToOid(oid.Marshal(sourceCode)).String()
-	zippedCode, _ := compression.CompressBrotliEncode([]byte(sourceCode))
-	_, err := s.App.Storage.Snippet.Create(cid, zippedCode, "", "", "", referrer)
-	if err != nil {
-		http.Error(nil, "Failed to create snippet", http.StatusInternalServerError)
-		return "", false
-	}
-	res := s.App.Storage.Snippet.GetByCid(cid)
-	if res.IpfsCid != cid {
-		http.Error(nil, "Failed to load snippet by cid", http.StatusInternalServerError)
-		return "", false
-	}
-	linkUrl := "https://" + hostname + "/sandbox/" + cid + "/"
-	s.Event("sandboxUnzipped", map[string]interface{}{
-		"id":       res.ID,
-		"cid":      cid,
-		"link":     linkUrl,
-		"referrer": referrer,
-	})
-	return cid, true
 }
 
 func (*Server) GetState(r *http.Request) (state metamodel.Vector, ok bool) {
