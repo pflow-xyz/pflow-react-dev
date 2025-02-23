@@ -53,6 +53,7 @@ func (i *SvgImage) newSvgImage(xy ...int) *SvgImage {
 	} else {
 		i.writerOut.Write([]byte(fmt.Sprintf("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"%v\" height=\"%v\" >\n", i.width, i.height)))
 	}
+	i.Rect(0, 0, i.width, i.height, `fill="#ffffff"`)
 
 	i.writerOut.Write([]byte(
 		`<defs><marker id="markerArrow1" markerWidth="23" markerHeight="13" refX="31" refY="6" orient="auto">` +
