@@ -1,11 +1,14 @@
-pflow.xyz
+pflow.dev
 ---------
 
 Visual State Machine SDK for Web3
 
-[![pflow](https://pflow.dev/img/zb2rhkizUC1o2JuvgwhbH1XrLZkdK8x66pP1KR7sWAEw9c5FE.svg)](https://pflow.dev/p/zb2rhkizUC1o2JuvgwhbH1XrLZkdK8x66pP1KR7sWAEw9c5FE/)
+This react app provided the basis to experiment with models and share them on github.
+A full archive of the models created during the lifespan of this app is found in this sqlite db:
+
+https://github.com/pflow-xyz/pflow-dev/blob/main/pflow-xyz.v0.db
 
 status
 ------
 
-beta - first release (unaudited)
+Deprecated - replaced by https://pflow.xyz
